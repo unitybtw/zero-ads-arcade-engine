@@ -9,10 +9,11 @@
 Most web games today are hidden behind intrusive ads and trackers. **Zero-Ads Arcade Engine** provide developers with a clean infrastructure to host high-quality web games while maintaining full control over the user experience.
 
 ## 🏗️ Technical Architecture
-- **Core:** Vanilla TypeScript (No heavy framework dependencies)
-- **State Management:** Secure local storage + Remote Firebase support
-- **Input System:** Unified Gamepad / Keyboard / Touch-HUD mapping
-- **Overlay:** Glassmorphic UI for pause menus, scoreboards, and settings
+- **Core:** Vanilla TypeScript with **ESBuild** minification.
+- **State Management:** Persistent **SessionManager** with analytics tracking.
+- **Input System:** Unified Gamepad (Xbox/PS), Keyboard, and **Multi-touch HUD**.
+- **Visuals:** CRT Scanline overlay with adjustable intensity.
+- **Audio:** **SoundManager** with global volume and batch preloading.
 
 ## 📂 Folder Structure
 - `src/core`: Game loop, Asset loader, and State management.
@@ -21,9 +22,11 @@ Most web games today are hidden behind intrusive ads and trackers. **Zero-Ads Ar
 - `docs/`: Full documentation and integration guides.
 
 ## 🚀 Key Features
-- **One-Click Integration:** Embed `<arcade-game src="game.html">` tags.
-- **Zero Latency:** Optimized for low-end devices and university networks.
-- **Privacy First:** No cookies, no trackers, no ads.
+- **Gamepad API Support:** Plug-and-play controller detection.
+- **Haptic Feedback:** Physical vibration for virtual HUD buttons.
+- **Session Analytics:** Tracking play time, session counts, and high scores.
+- **Security Hardened:** Strict origin validation and iframe error boundaries.
+- **Minified Builds:** Sub-50KB engine footprint for rapid loading.
  
 ## 🚀 Quick Start
  
