@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "> A lightweight, open-source engine for embedding ad-free games into any web application with built-in analytics, leaderboards, and mobile-ready controls.",
   "main": "index.js",
+  "type": "module",
   "directories": {
     "doc": "docs"
   },
