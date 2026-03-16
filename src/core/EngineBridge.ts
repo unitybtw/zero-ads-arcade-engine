@@ -4,8 +4,10 @@
  * Oyunun High Score'u veya durumunu ana sayfaya göndermesi için bir köprü görevi görür.
  */
 
+export type GameEventType = 'SCORE_UPDATE' | 'GAME_OVER' | 'GAME_READY' | 'LEVEL_UP' | 'PAUSE' | 'RESUME';
+
 export interface GameEvent {
-    type: 'SCORE_UPDATE' | 'GAME_OVER' | 'GAME_READY' | 'LEVEL_UP';
+    type: GameEventType;
     value: any;
     timestamp: number;
 }
@@ -13,19 +15,23 @@ export interface GameEvent {
 export class EngineBridge {
     private gameId: string;
     private targetOrigin: string;
+    private handlers: Map<GameEventType, ((data: any) => void)[]> = new Map();
 
     constructor(gameId: string, targetOrigin: string = '*') {
-        self.gameId = gameId;
-        self.targetOrigin = targetOrigin;
-        self.initListeners();
+        this.gameId = gameId;
+        this.targetOrigin = targetOrigin;
+        this.initListeners();
     }
 
-    /**
-     * Mesaj dinleyicilerini başlat
-     */
+    public on(type: GameEventType, handler: (data: any) => void) {
+        if (!this.handlers.has(type)) {
+            this.handlers.set(type, []);
+        }
+        this.handlers.get(type)?.push(handler);
+    }
+
     private initListeners() {
         window.addEventListener('message', (event) => {
-            // Güvenlik kontrolü (üretim aşamasında targetOrigin kontrol edilmeli)
             if (this.targetOrigin !== '*' && event.origin !== this.targetOrigin) return;
 
             const data = event.data;
@@ -35,38 +41,21 @@ export class EngineBridge {
         });
     }
 
-    /**
-     * Oyundan gelen verileri işle
-     */
     private handleGameMessage(event: GameEvent) {
-        console.log(`[Arcade Engine] Received from ${this.gameId}:`, event);
+        console.log(`[Arcade Engine] Event: ${event.type}`, event.value);
         
-        switch (event.type) {
-            case 'SCORE_UPDATE':
-                this.updateLocalHighScore(event.value);
-                break;
-            case 'GAME_OVER':
-                this.showGameOverHUD(event.value);
-                break;
-            default:
-                break;
+        const eventHandlers = this.handlers.get(event.type);
+        if (eventHandlers) {
+            eventHandlers.forEach(handler => handler(event.value));
+        }
+
+        // Default handling for critical events
+        if (event.type === 'SCORE_UPDATE') {
+            this.syncScore(event.value);
         }
     }
 
-    /**
-     * Skor tablosu güncelleme mantığı
-     */
-    private updateLocalHighScore(score: number) {
-        // Firebase veya LocalStorage entegrasyonu buraya gelecek
-        console.log(`Updating high score for ${this.gameId} to: ${score}`);
-    }
-
-    /**
-     * HUD Tetikleme
-     */
-    private showGameOverHUD(finalData: any) {
-        // UI katmanını tetikler
-        const customEvent = new CustomEvent('arcade:game-over', { detail: finalData });
-        window.dispatchEvent(customEvent);
+    private syncScore(score: number) {
+        localStorage.setItem(`arcade_score_${this.gameId}`, score.toString());
     }
 }
