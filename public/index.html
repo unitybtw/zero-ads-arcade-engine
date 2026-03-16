@@ -27,6 +27,31 @@
             margin-top: 50px;
             overflow: hidden;
         }
+        #loading-screen {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: #0a0a0c;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+            transition: opacity 0.5s ease;
+        }
+        .loader {
+            width: 48px;
+            height: 48px;
+            border: 5px solid #FFF;
+            border-bottom-color: #00e5ff;
+            border-radius: 50%;
+            display: inline-block;
+            box-sizing: border-box;
+            animation: rotation 1s linear infinite;
+        }
+        @keyframes rotation {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
         .hud-top {
             position: absolute;
             top: 10px;
@@ -59,6 +84,10 @@
     </div>
     
     <div class="arcade-container">
+        <div id="loading-screen">
+            <span class="loader"></span>
+            <p>INITIALIZING ANALYTICS...</p>
+        </div>
         <!-- Buraya oyun iframe'i gelecek -->
         <div class="hud-top" id="score-display">SCORE: 00000</div>
         <div class="scanline"></div>
@@ -68,6 +97,14 @@
     <script type="module">
         import { EngineBridge } from './EngineBridge.js';
         const bridge = new EngineBridge('test-game');
+        
+        window.addEventListener('message', (event) => {
+            if (event.data.payload?.type === 'GAME_READY') {
+                const loader = document.getElementById('loading-screen');
+                if (loader) loader.style.opacity = '0';
+                setTimeout(() => loader?.remove(), 500);
+            }
+        });
     </script>
 </body>
 </html>
