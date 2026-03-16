@@ -25,7 +25,10 @@ Most web games today are hidden behind intrusive ads and trackers. **Zero-Ads Ar
 - **Zero Latency:** Optimized for low-end devices and university networks.
 - **Privacy First:** No cookies, no trackers, no ads.
 
-## 🛠️ Getting Started
-```bash
-npm install @unitybtw/arcade-engine
-```
+## 🎨 Branding & Social Previews
+To maintain a professional look, we recommend using the following assets for your repository:
+- **Social Preview Image**: Use a 1280x640 image with the HUD aesthetic.
+- **Repository Topics**: `game-engine`, `arcade`, `open-source`, `typescript`, `gamedev`.
+
+## 📄 License
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
