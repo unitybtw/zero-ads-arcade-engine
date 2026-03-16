@@ -4,9 +4,11 @@
  */
 
 export class InputManager {
-    private gamepads: Map<number, Gamepad> = new Map();
+    private buttonStates: Map<number, boolean[]> = new Map();
+    private onInput: (key: string, isPressed: boolean) => void;
 
-    constructor() {
+    constructor(onInput: (key: string, isPressed: boolean) => void) {
+        this.onInput = onInput;
         this.initGamepadListeners();
     }
 
@@ -14,11 +16,13 @@ export class InputManager {
         window.addEventListener("gamepadconnected", (e) => {
             console.log(`[Arcade Input] Gamepad connected at index ${e.gamepad.index}: ${e.gamepad.id}`);
             this.gamepads.set(e.gamepad.index, e.gamepad);
+            this.buttonStates.set(e.gamepad.index, new Array(e.gamepad.buttons.length).fill(false));
         });
 
         window.addEventListener("gamepaddisconnected", (e) => {
             console.log(`[Arcade Input] Gamepad disconnected from index ${e.gamepad.index}`);
             this.gamepads.delete(e.gamepad.index);
+            this.buttonStates.delete(e.gamepad.index);
         });
 
         this.startPolling();
@@ -39,7 +43,28 @@ export class InputManager {
     }
 
     private handleGamepadInput(gp: Gamepad) {
-        // Implementation for mapping buttons/axes comes in next commit
+        const prevStates = this.buttonStates.get(gp.index);
+        if (!prevStates) return;
+
+        // Standard Mapping (Typical Xbox/PlayStation layout)
+        const mapping: Record<number, string> = {
+            14: 'left',  // D-Pad Left
+            15: 'right', // D-Pad Right
+            0: 'a',      // Button A/Cross
+            1: 'b',      // Button B/Circle
+            9: 'pause'   // Menu/Start
+        };
+
+        gp.buttons.forEach((btn, index) => {
+            const isPressed = btn.pressed;
+            if (isPressed !== prevStates[index]) {
+                const key = mapping[index];
+                if (key) {
+                    this.onInput(key, isPressed);
+                }
+                prevStates[index] = isPressed;
+            }
+        });
     }
 
     public getConnectedGamepads() {
