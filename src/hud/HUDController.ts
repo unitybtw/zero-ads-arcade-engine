@@ -88,8 +88,20 @@ export class HUDController {
                         this.emitEvent(isPaused ? 'PAUSE' : 'RESUME');
                     });
                 } else {
-                    btn.addEventListener('touchstart', () => this.emitInput(btnId, true));
-                    btn.addEventListener('touchend', () => this.emitInput(btnId, false));
+                    btn.addEventListener('touchstart', (e) => {
+                        e.preventDefault();
+                        this.emitInput(btnId, true);
+                    }, { passive: false });
+
+                    btn.addEventListener('touchend', (e) => {
+                        e.preventDefault();
+                        this.emitInput(btnId, false);
+                    }, { passive: false });
+
+                    btn.addEventListener('touchcancel', (e) => {
+                        e.preventDefault();
+                        this.emitInput(btnId, false);
+                    }, { passive: false });
                 }
             }
         });
