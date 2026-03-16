@@ -1,6 +1,9 @@
 # 🕹️ Zero-Ads Arcade Engine
 
-> A lightweight, open-source engine for embedding ad-free games into any web application with built-in analytics, leaderboards, and mobile-ready controls.
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Open Source Love png1](https://badges.frapsoft.com/os/v1/open-source.png?v=103)](https://github.com/ellerbrock/open-source-badges/)
+
+> A lightweight, open-source (MIT) engine for embedding ad-free games into any web application with built-in analytics, leaderboards, and mobile-ready controls.
 
 ## 🌟 Why this exists?
 Most web games today are hidden behind intrusive ads and trackers. **Zero-Ads Arcade Engine** provide developers with a clean infrastructure to host high-quality web games while maintaining full control over the user experience.
