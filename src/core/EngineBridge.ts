@@ -64,6 +64,13 @@ export class EngineBridge {
         this.handlers.get(type)?.push(handler);
     }
 
+    public setScanlineIntensity(intensity: number) {
+        const scanline = document.querySelector('.scanline') as HTMLElement;
+        if (scanline) {
+            scanline.style.opacity = intensity.toString();
+        }
+    }
+
     private initListeners() {
         window.addEventListener('message', (event) => {
             // Security check: Only process messages from the allowed origin
