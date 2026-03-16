@@ -36,16 +36,23 @@ export class EngineBridge {
 
     private initListeners() {
         window.addEventListener('message', (event) => {
-            if (this.targetOrigin !== '*' && event.origin !== this.targetOrigin) return;
+            // Security check: Only process messages from the allowed origin
+            if (this.targetOrigin !== '*' && event.origin !== this.targetOrigin) {
+                console.warn(`[Arcade Engine] Blocking message from unauthorized origin: ${event.origin}`);
+                return;
+            }
 
             const data = event.data;
             if (data && data.source === 'ARCADE_ENGINE_GAME') {
-                this.handleGameMessage(data.payload as GameEvent);
+                this.handleGameMessage(data.payload as GameEvent, event.origin);
             }
         });
     }
 
-    private handleGameMessage(event: GameEvent) {
+    private handleGameMessage(event: GameEvent, senderOrigin: string) {
+        // Double check origin if not wildcard
+        if (this.targetOrigin !== '*' && senderOrigin !== this.targetOrigin) return;
+
         console.log(`[Arcade Engine] Event: ${event.type}`, event.value);
         
         const eventHandlers = this.handlers.get(event.type);
