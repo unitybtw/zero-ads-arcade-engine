@@ -62,16 +62,12 @@
         <!-- Buraya oyun iframe'i gelecek -->
         <div class="hud-top" id="score-display">SCORE: 00000</div>
         <div class="scanline"></div>
-        <iframe src="about:blank" id="game-frame"></iframe>
+        <iframe src="test-game.html" id="game-frame"></iframe>
     </div>
 
     <script type="module">
-        import { EngineBridge } from './src/core/EngineBridge.js';
-        const bridge = new EngineBridge('demo-game');
-        
-        window.addEventListener('arcade:game-over', (e) => {
-            alert("GAME OVER! Final Score: " + e.detail.score);
-        });
+        import { EngineBridge } from './EngineBridge.js';
+        const bridge = new EngineBridge('test-game');
     </script>
 </body>
 </html>
