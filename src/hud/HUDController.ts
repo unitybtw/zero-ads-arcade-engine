@@ -124,6 +124,12 @@ export class HUDController {
 
     private emitInput(key: string, isPressed: boolean) {
         console.log(`Input ${key}: ${isPressed ? 'Pressed' : 'Released'}`);
+        
+        // Tactile feedback on press
+        if (isPressed && window.navigator.vibrate) {
+            window.navigator.vibrate(10); 
+        }
+
         // Ana oyun köprüsüne mesaj gönder
     }
 }
