@@ -29,10 +29,16 @@ export class EngineBridge {
     constructor(gameId: string, iframeId?: string, targetOrigin: string = '*') {
         this.gameId = gameId;
         this.targetOrigin = targetOrigin;
+        
+        // Environment check
+        if (!window.localStorage) {
+            console.error("[Arcade Engine] LocalStorage is not supported in this environment. Scoring will be disabled.");
+        }
+
         this.sound = new SoundManager();
         this.session = new SessionManager(gameId);
         
-        // Input Manager with callback to this bridge
+        // Input Manager (Safe check for Gamepad API)
         this.input = new InputManager((key, isPressed) => {
             this.emitLocalEvent('INPUT_EVENT', { key, isPressed });
             this.sendToGame('INPUT_EVENT', { key, isPressed });
