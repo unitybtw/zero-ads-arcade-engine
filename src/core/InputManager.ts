@@ -4,6 +4,7 @@
  */
 
 export class InputManager {
+    private gamepads: Map<number, Gamepad> = new Map();
     private buttonStates: Map<number, boolean[]> = new Map();
     private onInput: (key: string, isPressed: boolean) => void;
 
