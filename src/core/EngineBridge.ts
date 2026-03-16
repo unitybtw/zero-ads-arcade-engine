@@ -6,7 +6,7 @@
 
 import { SoundManager } from './SoundManager.js';
 
-export type GameEventType = 'SCORE_UPDATE' | 'GAME_OVER' | 'GAME_READY' | 'LEVEL_UP' | 'PAUSE' | 'RESUME';
+export type GameEventType = 'SCORE_UPDATE' | 'GAME_OVER' | 'GAME_READY' | 'LEVEL_UP' | 'PAUSE' | 'RESUME' | 'GAME_ERROR';
 
 export interface GameEvent {
     type: GameEventType;
@@ -19,12 +19,42 @@ export class EngineBridge {
     private targetOrigin: string;
     private handlers: Map<GameEventType, ((data: any) => void)[]> = new Map();
     public sound: SoundManager;
+    private iframe: HTMLIFrameElement | null = null;
 
-    constructor(gameId: string, targetOrigin: string = '*') {
+    constructor(gameId: string, iframeId?: string, targetOrigin: string = '*') {
         this.gameId = gameId;
         this.targetOrigin = targetOrigin;
         this.sound = new SoundManager();
+        
+        if (iframeId) {
+            this.iframe = document.getElementById(iframeId) as HTMLIFrameElement;
+            this.initErrorBoundary();
+        }
+
         this.initListeners();
+    }
+
+    private initErrorBoundary() {
+        if (!this.iframe) return;
+
+        this.iframe.onerror = (e) => {
+            console.error(`[Arcade Engine] Iframe error detected for ${this.gameId}:`, e);
+            this.emitLocalEvent('GAME_ERROR', { message: 'Iframe failed to load' });
+        };
+
+        // Check for empty src or blocked content
+        setTimeout(() => {
+            if (this.iframe && (!this.iframe.src || this.iframe.src === 'about:blank')) {
+                this.emitLocalEvent('GAME_ERROR', { message: 'Iframe source is invalid' });
+            }
+        }, 2000);
+    }
+
+    private emitLocalEvent(type: GameEventType | 'GAME_ERROR', value: any) {
+        const handlers = this.handlers.get(type as GameEventType);
+        if (handlers) {
+            handlers.forEach(h => h(value));
+        }
     }
 
     public on(type: GameEventType, handler: (data: any) => void) {
