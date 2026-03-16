@@ -28,23 +28,24 @@ export class HUDController {
                 .hud-btn {
                     width: 70px;
                     height: 70px;
-                    background: rgba(0, 229, 255, 0.1);
-                    border: 2px solid #00e5ff;
+                    background: rgba(0, 229, 255, 0.05);
+                    border: 1px solid rgba(0, 229, 255, 0.4);
                     border-radius: 50%;
-                    backdrop-filter: blur(5px);
+                    backdrop-filter: blur(10px);
                     color: #00e5ff;
                     display: flex;
                     align-items: center;
                     justify-content: center;
                     pointer-events: auto;
                     user-select: none;
-                    box-shadow: 0 0 15px rgba(0, 229, 255, 0.3);
-                    transition: all 0.1s ease;
+                    text-shadow: 0 0 10px rgba(0, 229, 255, 0.8);
+                    box-shadow: inset 0 0 10px rgba(0, 229, 255, 0.2), 0 0 15px rgba(0, 229, 255, 0.2);
+                    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
                 }
                 .hud-btn.small {
-                    width: 40px;
-                    height: 40px;
-                    font-size: 12px;
+                    width: 44px;
+                    height: 44px;
+                    font-size: 14px;
                 }
                 .hud-top-right {
                     position: absolute;
@@ -53,8 +54,18 @@ export class HUDController {
                     pointer-events: auto;
                 }
                 .hud-btn:active {
-                    transform: scale(0.9);
-                    background: rgba(0, 229, 255, 0.3);
+                    transform: scale(0.85);
+                    background: rgba(0, 229, 255, 0.2);
+                    box-shadow: 0 0 25px rgba(0, 229, 255, 0.5);
+                    border-color: #00e5ff;
+                }
+                @keyframes pulse {
+                    0% { box-shadow: 0 0 15px rgba(0, 229, 255, 0.2); }
+                    50% { box-shadow: 0 0 25px rgba(0, 229, 255, 0.4); }
+                    100% { box-shadow: 0 0 15px rgba(0, 229, 255, 0.2); }
+                }
+                .hud-btn {
+                    animation: pulse 2s infinite;
                 }
             </style>
             <div class="arcade-hud-overlay">
