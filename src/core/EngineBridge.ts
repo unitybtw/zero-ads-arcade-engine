@@ -4,6 +4,8 @@
  * Oyunun High Score'u veya durumunu ana sayfaya göndermesi için bir köprü görevi görür.
  */
 
+import { SoundManager } from './SoundManager';
+
 export type GameEventType = 'SCORE_UPDATE' | 'GAME_OVER' | 'GAME_READY' | 'LEVEL_UP' | 'PAUSE' | 'RESUME';
 
 export interface GameEvent {
