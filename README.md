@@ -24,6 +24,38 @@ Most web games today are hidden behind intrusive ads and trackers. **Zero-Ads Ar
 - **One-Click Integration:** Embed `<arcade-game src="game.html">` tags.
 - **Zero Latency:** Optimized for low-end devices and university networks.
 - **Privacy First:** No cookies, no trackers, no ads.
+ 
+## 🚀 Quick Start
+ 
+### 1. Host Integration (Main Site)
+Add the engine bridge to your main page to start capturing events.
+ 
+```html
+<script type="module">
+  import { EngineBridge } from './EngineBridge.js';
+  const arcade = new EngineBridge('my-game-id');
+  
+  // Listen for scores
+  arcade.on('SCORE_UPDATE', (score) => {
+    console.log("New High Score:", score);
+  });
+</script>
+```
+ 
+### 2. Game Integration (Inside Iframe)
+Send events from your game to the parent engine.
+ 
+```javascript
+window.parent.postMessage({
+  source: 'ARCADE_ENGINE_GAME',
+  payload: { type: 'SCORE_UPDATE', value: 100 }
+}, '*');
+```
+
+## 🛠️ Installation
+```bash
+npm install @unitybtw/arcade-engine
+```
 
 ## 🎨 Branding & Social Previews
 To maintain a professional look, we recommend using the following assets for your repository:
