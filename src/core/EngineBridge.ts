@@ -16,10 +16,12 @@ export class EngineBridge {
     private gameId: string;
     private targetOrigin: string;
     private handlers: Map<GameEventType, ((data: any) => void)[]> = new Map();
+    public sound: SoundManager;
 
     constructor(gameId: string, targetOrigin: string = '*') {
         this.gameId = gameId;
         this.targetOrigin = targetOrigin;
+        this.sound = new SoundManager();
         this.initListeners();
     }
 
