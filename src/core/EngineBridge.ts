@@ -5,8 +5,10 @@
  */
 
 import { SoundManager } from './SoundManager.js';
+import { SessionManager } from './SessionManager.js';
+import { InputManager } from './InputManager.js';
 
-export type GameEventType = 'SCORE_UPDATE' | 'GAME_OVER' | 'GAME_READY' | 'LEVEL_UP' | 'PAUSE' | 'RESUME' | 'GAME_ERROR';
+export type GameEventType = 'SCORE_UPDATE' | 'GAME_OVER' | 'GAME_READY' | 'LEVEL_UP' | 'PAUSE' | 'RESUME' | 'GAME_ERROR' | 'INPUT_EVENT';
 
 export interface GameEvent {
     type: GameEventType;
@@ -19,19 +21,57 @@ export class EngineBridge {
     private targetOrigin: string;
     private handlers: Map<GameEventType, ((data: any) => void)[]> = new Map();
     public sound: SoundManager;
+    public session: SessionManager;
+    public input: InputManager;
     private iframe: HTMLIFrameElement | null = null;
+    private startTime: number = Date.now();
 
     constructor(gameId: string, iframeId?: string, targetOrigin: string = '*') {
         this.gameId = gameId;
         this.targetOrigin = targetOrigin;
         this.sound = new SoundManager();
+        this.session = new SessionManager(gameId);
+        
+        // Input Manager with callback to this bridge
+        this.input = new InputManager((key, isPressed) => {
+            this.emitLocalEvent('INPUT_EVENT', { key, isPressed });
+            this.sendToGame('INPUT_EVENT', { key, isPressed });
+        });
         
         if (iframeId) {
             this.iframe = document.getElementById(iframeId) as HTMLIFrameElement;
             this.initErrorBoundary();
         }
 
+        this.initSession();
         this.initListeners();
+    }
+
+    private initSession() {
+        const data = this.session.getSession();
+        this.session.saveSession({ sessionCount: (data.sessionCount || 0) + 1 });
+        
+        // Track play time on exit/visibility change
+        window.addEventListener('beforeunload', () => this.syncSession());
+        document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'hidden') this.syncSession();
+        });
+    }
+
+    private syncSession() {
+        const elapsed = Math.floor((Date.now() - this.startTime) / 1000);
+        const data = this.session.getSession();
+        this.session.saveSession({ totalPlayTime: (data.totalPlayTime || 0) + elapsed });
+        this.startTime = Date.now(); // Reset for next sync
+    }
+
+    private sendToGame(type: string, value: any) {
+        if (this.iframe && this.iframe.contentWindow) {
+            this.iframe.contentWindow.postMessage({
+                source: 'ARCADE_ENGINE_HOST',
+                payload: { type, value, timestamp: Date.now() }
+            }, this.targetOrigin);
+        }
     }
 
     private initErrorBoundary() {
