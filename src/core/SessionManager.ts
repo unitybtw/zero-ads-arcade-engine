@@ -7,6 +7,8 @@ export interface SessionData {
     gameId: string;
     highScore: number;
     lastPlayed: number;
+    totalPlayTime: number; // In seconds
+    sessionCount: number;
     version: string;
     customData: Record<string, any>;
 }
@@ -41,6 +43,8 @@ export class SessionManager {
             gameId: this.storageKey.replace('arcade_session_', ''),
             highScore: 0,
             lastPlayed: Date.now(),
+            totalPlayTime: 0,
+            sessionCount: 0,
             version: '1.0.0',
             customData: {}
         };
