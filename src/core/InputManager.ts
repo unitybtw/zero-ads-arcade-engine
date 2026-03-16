@@ -20,6 +20,26 @@ export class InputManager {
             console.log(`[Arcade Input] Gamepad disconnected from index ${e.gamepad.index}`);
             this.gamepads.delete(e.gamepad.index);
         });
+
+        this.startPolling();
+    }
+
+    private startPolling() {
+        const poll = () => {
+            const gps = navigator.getGamepads();
+            for (const gp of gps) {
+                if (gp) {
+                    this.gamepads.set(gp.index, gp);
+                    this.handleGamepadInput(gp);
+                }
+            }
+            requestAnimationFrame(poll);
+        };
+        requestAnimationFrame(poll);
+    }
+
+    private handleGamepadInput(gp: Gamepad) {
+        // Implementation for mapping buttons/axes comes in next commit
     }
 
     public getConnectedGamepads() {
