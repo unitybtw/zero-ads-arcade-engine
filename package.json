@@ -5,12 +5,15 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "esbuild src/core/EngineBridge.ts --bundle --format=esm --outdir=public",
+    "build:min": "esbuild src/core/EngineBridge.ts --bundle --format=esm --minify --outfile=public/EngineBridge.min.js"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "esbuild": "^0.27.4",
     "typescript": "^5.9.3"
   }
 }
