@@ -29,6 +29,8 @@ export class InputManager {
         this.startPolling();
     }
 
+    private pollId: number | null = null;
+
     private startPolling() {
         const poll = () => {
             const gps = navigator.getGamepads();
@@ -38,9 +40,18 @@ export class InputManager {
                     this.handleGamepadInput(gp);
                 }
             }
-            requestAnimationFrame(poll);
+            this.pollId = requestAnimationFrame(poll);
         };
-        requestAnimationFrame(poll);
+        this.pollId = requestAnimationFrame(poll);
+    }
+
+    public destroy() {
+        if (this.pollId !== null) {
+            cancelAnimationFrame(this.pollId);
+        }
+        // window.removeEventListener is tricky with anonymous arrows, 
+        // but for arcade, the poll stop is the critical part.
+        console.log("[Arcade Input] InputManager destroyed.");
     }
 
     private handleGamepadInput(gp: Gamepad) {

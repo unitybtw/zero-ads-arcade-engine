@@ -97,33 +97,38 @@ export class EngineBridge {
         }
     }
 
-    public on(type: GameEventType, handler: (data: any) => void) {
-        if (!this.handlers.has(type)) {
-            this.handlers.set(type, []);
+    public off(type: GameEventType, handler: (data: any) => void) {
+        const eventHandlers = this.handlers.get(type);
+        if (eventHandlers) {
+            this.handlers.set(type, eventHandlers.filter(h => h !== handler));
         }
-        this.handlers.get(type)?.push(handler);
     }
 
-    public setScanlineIntensity(intensity: number) {
-        const scanline = document.querySelector('.scanline') as HTMLElement;
-        if (scanline) {
-            scanline.style.opacity = intensity.toString();
+    public destroy() {
+        this.syncSession();
+        this.input.destroy();
+        window.removeEventListener('message', this.messageListener);
+        window.removeEventListener('beforeunload', this.syncSession);
+        // Additional cleanup for handlers
+        this.handlers.clear();
+        console.log(`[Arcade Engine] Bridge for ${this.gameId} destroyed.`);
+    }
+
+    private messageListener = (event: MessageEvent) => {
+        // Security check: Only process messages from the allowed origin
+        if (this.targetOrigin !== '*' && event.origin !== this.targetOrigin) {
+            console.warn(`[Arcade Engine] Blocking message from unauthorized origin: ${event.origin}`);
+            return;
+        }
+
+        const data = event.data;
+        if (data && data.source === 'ARCADE_ENGINE_GAME') {
+            this.handleGameMessage(data.payload as GameEvent, event.origin);
         }
     }
 
     private initListeners() {
-        window.addEventListener('message', (event) => {
-            // Security check: Only process messages from the allowed origin
-            if (this.targetOrigin !== '*' && event.origin !== this.targetOrigin) {
-                console.warn(`[Arcade Engine] Blocking message from unauthorized origin: ${event.origin}`);
-                return;
-            }
-
-            const data = event.data;
-            if (data && data.source === 'ARCADE_ENGINE_GAME') {
-                this.handleGameMessage(data.payload as GameEvent, event.origin);
-            }
-        });
+        window.addEventListener('message', this.messageListener);
     }
 
     private handleGameMessage(event: GameEvent, senderOrigin: string) {
